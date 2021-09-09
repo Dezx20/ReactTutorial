@@ -1,47 +1,50 @@
+import React, { useState } from "react";
 import ExpenseItem from "./ExpenseItem";
+import ExpenseFilter from "./ExpenseFilter";
 import Card from "../UI/Card";
 import "./Expenses.css";
-import ExpenseFilter from "./ExpenseFilter";
 const Expenses = function (props) {
   const expenses = props.expensesArray;
-  const filterYearHandler = (filterYear) => {
-    console.log("expenses component");
-    console.log(filterYear);
+  const [filterYear, setFilterYear] = useState("2022");
+  const filterChangeHandler = (selectedYear) => {
+    console.log("Express.js");
+    setFilterYear(selectedYear);
+    console.log(selectedYear);
   };
   return (
-    <div>
-      <ExpenseFilter onFilterYear={filterYearHandler} />
-      <Card className="expenses">
-        <ExpenseItem
-          title={expenses[0].title}
-          date={expenses[0].date}
-          amount={expenses[0].amount}
-        >
-          {" "}
-        </ExpenseItem>
-        <ExpenseItem
-          title={expenses[1].title}
-          date={expenses[1].date}
-          amount={expenses[1].amount}
-        >
-          {" "}
-        </ExpenseItem>
-        <ExpenseItem
-          title={expenses[2].title}
-          date={expenses[2].date}
-          amount={expenses[2].amount}
-        >
-          {" "}
-        </ExpenseItem>
-        <ExpenseItem
-          title={expenses[3].title}
-          date={expenses[3].date}
-          amount={expenses[3].amount}
-        >
-          {" "}
-        </ExpenseItem>
-      </Card>
-    </div>
+    // <div>
+    <Card className="expenses">
+      <ExpenseFilter onChangeFilter={filterChangeHandler} />
+      <ExpenseItem
+        title={expenses[0].title}
+        date={expenses[0].date}
+        amount={expenses[0].amount}
+      >
+        {" "}
+      </ExpenseItem>
+      <ExpenseItem
+        title={expenses[1].title}
+        date={expenses[1].date}
+        amount={expenses[1].amount}
+      >
+        {" "}
+      </ExpenseItem>
+      <ExpenseItem
+        title={expenses[2].title}
+        date={expenses[2].date}
+        amount={expenses[2].amount}
+      >
+        {" "}
+      </ExpenseItem>
+      <ExpenseItem
+        title={expenses[3].title}
+        date={expenses[3].date}
+        amount={expenses[3].amount}
+      >
+        {" "}
+      </ExpenseItem>
+    </Card>
+    // </div>
   );
 };
 
