@@ -1,19 +1,80 @@
 import { Fragment } from "react";
-
+import { MongoClient, ObjectId } from "mongodb";
+import Head from "next/head";
 import MeetupDetail from "../../components/meetups/MeetupDetail";
 
-const MeetupDetails = () => {
+const MeetupDetails = (props) => {
   return (
     <Fragment>
+      <Head>
+        <title> {props.meetupData.title}</title>
+        <meta name="description" content={props.meetupData.description} />
+      </Head>
       <MeetupDetail
-        image="https://images2.minutemediacdn.com/image/upload/c_fill,g_auto,h_1248,w_2220/f_auto,q_auto,w_1100/v1555275019/shape/mentalfloss/istock-510692123.jpg"
-        title="first meetup"
-        address="some random address, houes no 23"
-        description=" Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut laboriosam
-        sed in dolor iusto possimus sint maiores, exercitationem tempore nobis!"
+        image={props.meetupData.image}
+        title={props.meetupData.title}
+        address={props.meetupData.address}
+        description={props.meetupData.description}
       />
     </Fragment>
   );
+};
+
+export const getStaticPaths = async () => {
+  const client = await MongoClient.connect(
+    "mongodb+srv://miniDezx:reactNextJS@cluster0.9z91v.mongodb.net/meetups?retryWrites=true&w=majority"
+  );
+  const db = client.db();
+
+  const meetupsCollection = db.collection("meetups");
+
+  const meetups = await meetupsCollection
+    .find(
+      {},
+      {
+        _id: 1,
+      }
+    )
+    .toArray();
+
+  client.close();
+
+  return {
+    fallback: "blocking",
+    paths: meetups.map((meetup) => ({
+      params: { meetupId: meetup._id.toString() },
+    })),
+  };
+};
+
+export const getStaticProps = async (context) => {
+  // fetch data for a single meetup
+  const meetupId = context.params.meetupId;
+
+  const client = await MongoClient.connect(
+    "mongodb+srv://miniDezx:reactNextJS@cluster0.9z91v.mongodb.net/meetups?retryWrites=true&w=majority"
+  );
+  const db = client.db();
+
+  const meetupsCollection = db.collection("meetups");
+
+  const selectedMeetup = await meetupsCollection.findOne({
+    _id: ObjectId(meetupId),
+  });
+
+  client.close();
+
+  return {
+    props: {
+      meetupData: {
+        id: selectedMeetup._id.toString(),
+        title: selectedMeetup.data.title,
+        address: selectedMeetup.data.address,
+        image: selectedMeetup.data.image,
+        description: selectedMeetup.data.description,
+      },
+    },
+  };
 };
 
 export default MeetupDetails;
